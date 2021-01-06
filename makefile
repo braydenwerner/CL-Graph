@@ -2,9 +2,9 @@ CXX = g++
 CXXFLAGS = -O2
 LIBS = -ltermbox
 
-default: graph 
+default: graph
 
-typings: graph.cpp 
+graph: graph.cpp 
 	$(CXX) $(CXXFLAGS) graph.cpp -o graph $(LIBS)
 
 clean:
