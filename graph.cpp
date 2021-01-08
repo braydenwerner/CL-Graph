@@ -23,36 +23,26 @@ int current_zoom = zoom_settings[2];
 
 
 uint32_t line_pieces[] = {
-        '\\','|','/','-', '*'
+        '\\','|','/','-', '*','_'
 };
 
 void draw_axis() {
     int origin = min(tb_width(), tb_height()) / 2;
-    for (int x = 0; x < origin * 2; x++) {
-        tb_change_cell(x, origin, line_pieces[4], THEMES[current_theme].text, THEMES[current_theme].background);
-        
-        //  line markings
-        if (x % 5 == 0 && origin + x < origin * 2) {
-            tb_change_cell(origin + x, origin + 1, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
-            tb_change_cell(origin - x, origin + 1, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
-        }
+    int center_screen_offset = (max(tb_width(), tb_height()) - origin) / 4;
+    for (int x = 0; x < origin * 4; x++) {
+        tb_change_cell(x + center_screen_offset, origin, line_pieces[3], THEMES[current_theme].text, THEMES[current_theme].background);
     }
     
     for (int y = 0; y < origin * 2; y++) {
-        tb_change_cell(origin, y, line_pieces[4], THEMES[current_theme].text, THEMES[current_theme].background);
-        
-        //  line markings
-        if (y % 5 == 0 && origin + y < origin * 2) {
-            tb_change_cell(origin - 1, origin + y, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
-            tb_change_cell(origin - 1, origin - y, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
-        }
-    }
+        tb_change_cell(origin * 2 + center_screen_offset, y, line_pieces[1], THEMES[current_theme].text, THEMES[current_theme].background);
+    } 
 }
 
 void graph_line() {
     int origin = min(tb_width(), tb_height()) / 2;
+    int center_screen_offset = (max(tb_width(), tb_height()) - origin) / 4;
     for (int i = 0; i < origin * 2; i++) {
-        tb_change_cell(i, -yValues.at(i) + origin, '*', THEMES[current_theme].text, THEMES[current_theme].background);
+        tb_change_cell(i + origin + center_screen_offset, -yValues.at(i) + origin, '*', THEMES[current_theme].text, THEMES[current_theme].background);
     }
 }
 
@@ -62,7 +52,7 @@ void fill_yValues() {
    typedef exprtk::expression<T>     expression_t;
    typedef exprtk::parser<T>             parser_t;
 
-   std::string expression_string = "x^2";
+   std::string expression_string = "sqrt(x) + 1";
 
    T x;
 
@@ -82,11 +72,6 @@ void fill_yValues() {
       T y = expression.value();
       yValues.push_back(y);
    }
-   
-   for (int i = 0; i < yValues.size(); i++) {
-       cout << yValues.at(i) << ' ';
-   }
-   cout << '\n';
 }
 
 int main() {
@@ -98,7 +83,6 @@ int main() {
     fill_yValues<double>();
     
     while (running) {
-        //  sets background, text color
         tb_set_clear_attributes(THEMES[current_theme].text, THEMES[current_theme].background);
         tb_clear();
         
