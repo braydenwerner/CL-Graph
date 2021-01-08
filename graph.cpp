@@ -5,6 +5,7 @@
 #include <vector>
 #include <chrono>
 #include <ctype.h>
+#include <algorithm> 
 
 #include <cstdio>
 #include "exprtk.hpp"
@@ -20,38 +21,38 @@ vector<int> zoom_settings = { 5,10,25,50,100 };
 vector<int> yValues;
 int current_zoom = zoom_settings[2];
 
-int origin_X = tb_width() / 2;
-int origin_Y = tb_height() / 2;
 
 uint32_t line_pieces[] = {
-        '\\','|','/','-'
+        '\\','|','/','-', '*'
 };
 
 void draw_axis() {
-    for (int x = 0; x < tb_width(); x++) {
-        tb_change_cell(x, tb_height() / 2, line_pieces[3], THEMES[current_theme].text, THEMES[current_theme].background);
+    int origin = min(tb_width(), tb_height()) / 2;
+    for (int x = 0; x < origin * 2; x++) {
+        tb_change_cell(x, origin, line_pieces[4], THEMES[current_theme].text, THEMES[current_theme].background);
         
         //  line markings
-        if (x % 5 == 0 && origin_X + x < tb_width()) {
-            tb_change_cell(origin_X + x, tb_height() / 2 + 1, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
-            tb_change_cell(origin_X - x, tb_height() / 2 + 1, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
+        if (x % 5 == 0 && origin + x < origin * 2) {
+            tb_change_cell(origin + x, origin + 1, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
+            tb_change_cell(origin - x, origin + 1, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
         }
     }
     
-    for (int y = 0; y < tb_height(); y++) {
-        tb_change_cell(tb_width() / 2, y, line_pieces[1], THEMES[current_theme].text, THEMES[current_theme].background);
+    for (int y = 0; y < origin * 2; y++) {
+        tb_change_cell(origin, y, line_pieces[4], THEMES[current_theme].text, THEMES[current_theme].background);
         
         //  line markings
-        if (y % 5 == 0 && origin_Y + y < tb_height()) {
-            tb_change_cell(tb_width() / 2 - 1, origin_Y + y, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
-            tb_change_cell(tb_width() / 2 - 1, origin_Y - y, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
+        if (y % 5 == 0 && origin + y < origin * 2) {
+            tb_change_cell(origin - 1, origin + y, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
+            tb_change_cell(origin - 1, origin - y, 'a', THEMES[current_theme].text, THEMES[current_theme].background);
         }
     }
 }
 
 void graph_line() {
-    for (int i = 0; i < yValues.size(); i++) {
-        tb_change_cell(i, -yValues.at(i), '*', THEMES[current_theme].text, THEMES[current_theme].background);
+    int origin = min(tb_width(), tb_height()) / 2;
+    for (int i = 0; i < origin * 2; i++) {
+        tb_change_cell(i, -yValues.at(i) + origin, '*', THEMES[current_theme].text, THEMES[current_theme].background);
     }
 }
 
@@ -61,7 +62,7 @@ void fill_yValues() {
    typedef exprtk::expression<T>     expression_t;
    typedef exprtk::parser<T>             parser_t;
 
-   std::string expression_string = "x";
+   std::string expression_string = "x^2";
 
    T x;
 
@@ -75,15 +76,17 @@ void fill_yValues() {
    parser_t parser;
    parser.compile(expression_string,expression);
 
-   for (x = T(-tb_width() / 2); x <= T(+tb_width() / 2); x += T(1))
+   int max_axis_value = min(tb_width(), tb_height());
+   for (x = T(-max_axis_value / 2); x <= T(+max_axis_value / 2); x += T(1))
    {
       T y = expression.value();
       yValues.push_back(y);
    }
    
-//    for (int i = 0; i < yValues.size(); i++) {
-//        cout << yValues.at(i) << endl;
-//    }
+   for (int i = 0; i < yValues.size(); i++) {
+       cout << yValues.at(i) << ' ';
+   }
+   cout << '\n';
 }
 
 int main() {
