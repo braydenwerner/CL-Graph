@@ -28,7 +28,6 @@ uint32_t line_pieces[] = {
 };
 
 void draw_axis() {
-    
     for (int x = 0; x < tb_width(); x++) {
         tb_change_cell(x, tb_height() / 2, line_pieces[3], THEMES[current_theme].text, THEMES[current_theme].background);
         
