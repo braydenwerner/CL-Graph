@@ -52,7 +52,7 @@ void fill_yValues() {
    typedef exprtk::expression<T>     expression_t;
    typedef exprtk::parser<T>             parser_t;
 
-   std::string expression_string = "sqrt(x) + 1";
+   std::string expression_string = "x + 2";
 
    T x;
 
@@ -67,8 +67,7 @@ void fill_yValues() {
    parser.compile(expression_string,expression);
 
    int max_axis_value = min(tb_width(), tb_height());
-   for (x = T(-max_axis_value / 2); x <= T(+max_axis_value / 2); x += T(1))
-   {
+   for (x = T(-max_axis_value / 2); x <= T(+max_axis_value / 2); x += T(1)) {
       T y = expression.value();
       yValues.push_back(y);
    }
