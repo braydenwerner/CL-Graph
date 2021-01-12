@@ -47,13 +47,11 @@ void graph_line() {
 }
 
 template <typename T>
-void fill_yValues() {
+void fill_yValues(string expression_string) {
    typedef exprtk::symbol_table<T> symbol_table_t;
    typedef exprtk::expression<T>     expression_t;
    typedef exprtk::parser<T>             parser_t;
-
-   std::string expression_string = "x + 2";
-
+   
    T x;
 
    symbol_table_t symbol_table;
@@ -73,13 +71,17 @@ void fill_yValues() {
    }
 }
 
-int main() {
+int main(int argc, char *argv[]) {
+    cout << argc << endl;
+    cout << argv[0] << endl;
+    if (argc != 2) return 0;
+    
     tb_event e;
     bool running = true;
     tb_init();
     tb_select_output_mode(TB_OUTPUT_256);
     
-    fill_yValues<double>();
+    fill_yValues<double>(argv[1]);
     
     while (running) {
         tb_set_clear_attributes(THEMES[current_theme].text, THEMES[current_theme].background);
